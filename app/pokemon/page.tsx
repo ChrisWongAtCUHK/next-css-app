@@ -114,7 +114,7 @@ export default function PokemonSelect() {
       {/* 3D 翻轉卡牌展示區 */}
       {selected && (
         <div
-          className='group w-64 h-96 perspective-[1000px] mt-4'
+          className='group w-64 h-96 perspective-[1000px] mt-4 hover:scale-105 transition-transform duration-300'
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div
