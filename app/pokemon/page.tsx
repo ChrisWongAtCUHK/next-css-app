@@ -8,12 +8,57 @@ interface PokemonOption {
   name: string
   height: number
   weight: number
+  types: { type: { name: string } }[] // 屬性欄位
   sprites: {
     front_default: string
     other: {
       'official-artwork': { front_default: string }
     }
   }
+}
+
+// 屬性顏色映射表 (Tailwind Class)
+const TYPE_COLORS: Record<string, string> = {
+  fire: 'bg-orange-500',
+  water: 'bg-blue-500',
+  grass: 'bg-green-500',
+  electric: 'bg-yellow-400',
+  psychic: 'bg-pink-500',
+  ice: 'bg-cyan-300',
+  dragon: 'bg-indigo-600',
+  dark: 'bg-gray-800',
+  fairy: 'bg-rose-300',
+  normal: 'bg-slate-400',
+  fighting: 'bg-red-700',
+  flying: 'bg-sky-400',
+  poison: 'bg-purple-500',
+  ground: 'bg-amber-600',
+  rock: 'bg-stone-500',
+  bug: 'bg-lime-500',
+  ghost: 'bg-violet-700',
+  steel: 'bg-zinc-400',
+}
+
+// 定義顏色碼 (Hex Codes)
+const TYPE_HEX_COLORS: Record<string, string> = {
+  normal: '#9ca3af', // gray-400
+  fire: '#f97316', // orange-500
+  water: '#3b82f6', // blue-500
+  grass: '#22c55e', // green-500
+  electric: '#eab308', // yellow-400
+  ice: '#67e8f9', // cyan-300
+  fighting: '#ef4444', // red-500
+  poison: '#a855f7', // purple-500
+  ground: '#d97706', // amber-600
+  flying: '#38bdf8', // sky-400
+  psychic: '#ec4899', // pink-500
+  bug: '#84cc16', // lime-500
+  rock: '#78716c', // stone-500
+  ghost: '#6d28d9', // violet-700
+  dragon: '#4f46e5', // indigo-600
+  steel: '#71717a', // zinc-500
+  fairy: '#f472b6', // rose-400
+  dark: '#1f2937', // gray-800
 }
 
 const POKEMON_LIST = [
@@ -120,8 +165,15 @@ export default function PokemonSelect() {
           <div
             className={`relative w-full h-full transition-all duration-500 transform-3d ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
           >
-            {/* 卡牌正面 (圖片) */}
-            <div className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 border-yellow-400 flex flex-col items-center justify-center p-4 backface-hidden'>
+            {/* 卡牌正面 (圖片) - 保持白色或加上淡淡的邊框色 */}
+            <div
+              className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 flex flex-col items-center justify-center p-4 backface-hidden'
+              style={{
+                borderColor: selected.types[0]
+                  ? TYPE_HEX_COLORS[selected.types[0].type.name]
+                  : '#facc15',
+              }}
+            >
               <div className='bg-gray-100 rounded-full p-4 mb-4'>
                 {/* 在 Image 標籤加入淡入效果 */}
                 <Image
@@ -141,10 +193,34 @@ export default function PokemonSelect() {
             </div>
 
             {/* 卡牌背面 (詳細資訊) */}
-            <div className='absolute inset-0 w-full h-full bg-slate-800 rounded-2xl shadow-xl border-4 border-yellow-500 flex flex-col items-center justify-center p-6 text-white transform-[rotateY(180deg)] backface-hidden'>
-              <h3 className='text-xl font-bold mb-6 border-b border-yellow-500 w-full text-center pb-2 capitalize'>
+            <div
+              className={`absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-white/50 flex flex-col items-center justify-center p-6 text-white transform-[rotateY(180deg)] backface-hidden ${TYPE_COLORS[selected.types[0].type.name] || 'bg-slate-800'}`}
+            >
+              <h3 className='text-xl font-bold mb-2 border-b border-white/30 w-full text-center pb-2 capitalize'>
                 {selected.name} Info
               </h3>
+              {/* 顯示屬性標籤 */}
+              <div className='flex gap-2 mb-4'>
+                {selected.types.map((t) => (
+                  <span
+                    key={t.type.name}
+                    className='px-2 py-1 bg-white/20 rounded-full text-xs uppercase tracking-tighter'
+                  >
+                    {t.type.name}
+                  </span>
+                ))}
+              </div>
+              <div className='space-y-3 w-full text-sm'>
+                <div className='flex justify-between font-mono'>
+                  <span>HEIGHT</span> <span>{selected.height / 10} m</span>
+                </div>
+                <div className='flex justify-between font-mono'>
+                  <span>WEIGHT</span> <span>{selected.weight / 10} kg</span>
+                </div>
+                <div className='flex justify-between font-mono'>
+                  <span>INDEX</span> <span>#{selected.id}</span>
+                </div>
+              </div>
               <div className='space-y-4 w-full text-sm'>
                 <div className='flex justify-between font-mono'>
                   <span>HEIGHT</span>{' '}
