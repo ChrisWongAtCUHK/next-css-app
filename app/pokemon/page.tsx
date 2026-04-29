@@ -70,6 +70,19 @@ const POKEMON_LIST = [
   'gengar',
 ]
 
+const getBackgroundStyle = (types: { type: { name: string } }[]) => {
+  const color1 = TYPE_HEX_COLORS[types[0].type.name] || '#1e293b'
+
+  // 如果有第二個屬性，則建立漸層
+  if (types.length > 1) {
+    const color2 = TYPE_HEX_COLORS[types[1].type.name]
+    return `linear-gradient(135deg, ${color1}, ${color2})`
+  }
+
+  // 單一屬性則直接回傳顏色
+  return color1
+}
+
 export default function PokemonSelect() {
   const [pokemonData, setPokemonData] = useState<PokemonOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -194,7 +207,12 @@ export default function PokemonSelect() {
 
             {/* 卡牌背面 (詳細資訊) */}
             <div
-              className={`absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-white/50 flex flex-col items-center justify-center p-6 text-white transform-[rotateY(180deg)] backface-hidden ${TYPE_COLORS[selected.types[0].type.name] || 'bg-slate-800'}`}
+              className='absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-white/50 flex flex-col items-center justify-center p-6 text-white rotate-y-180 backface-hidden'
+              style={{
+                background: selected.types
+                  ? getBackgroundStyle(selected.types)
+                  : '#1e293b',
+              }}
             >
               <h3 className='text-xl font-bold mb-2 border-b border-white/30 w-full text-center pb-2 capitalize'>
                 {selected.name} Info
@@ -204,39 +222,30 @@ export default function PokemonSelect() {
                 {selected.types.map((t) => (
                   <span
                     key={t.type.name}
-                    className='px-2 py-1 bg-white/20 rounded-full text-xs uppercase tracking-tighter'
+                    className='px-3 py-1 bg-black/30 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest'
                   >
                     {t.type.name}
                   </span>
                 ))}
               </div>
-              <div className='space-y-3 w-full text-sm'>
-                <div className='flex justify-between font-mono'>
-                  <span>HEIGHT</span> <span>{selected.height / 10} m</span>
-                </div>
-                <div className='flex justify-between font-mono'>
-                  <span>WEIGHT</span> <span>{selected.weight / 10} kg</span>
-                </div>
-                <div className='flex justify-between font-mono'>
-                  <span>INDEX</span> <span>#{selected.id}</span>
-                </div>
-              </div>
-              <div className='space-y-4 w-full text-sm'>
-                <div className='flex justify-between font-mono'>
-                  <span>HEIGHT</span>{' '}
-                  <span className='text-yellow-400'>
+              <div className='space-y-4 w-full text-sm font-medium'>
+                <div className='flex justify-between border-b border-white/10 pb-1'>
+                  <span className='opacity-70'>HEIGHT</span>
+                  <span className='font-mono text-yellow-300'>
                     {selected.height / 10} m
                   </span>
                 </div>
-                <div className='flex justify-between font-mono'>
-                  <span>WEIGHT</span>{' '}
-                  <span className='text-yellow-400'>
+                <div className='flex justify-between border-b border-white/10 pb-1'>
+                  <span className='opacity-70'>WEIGHT</span>
+                  <span className='font-mono text-yellow-300'>
                     {selected.weight / 10} kg
                   </span>
                 </div>
-                <div className='flex justify-between font-mono'>
-                  <span>INDEX</span>{' '}
-                  <span className='text-yellow-400'>#{selected.id}</span>
+                <div className='flex justify-between border-b border-white/10 pb-1'>
+                  <span className='opacity-70'>DEX INDEX</span>
+                  <span className='font-mono text-yellow-300'>
+                    #{selected.id.toString().padStart(3, '0')}
+                  </span>
                 </div>
               </div>
               <div className='mt-8 text-[10px] text-gray-400 uppercase tracking-widest text-center'>
