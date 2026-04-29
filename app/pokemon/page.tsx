@@ -114,14 +114,14 @@ export default function PokemonSelect() {
       {/* 3D 翻轉卡牌展示區 */}
       {selected && (
         <div
-          className='group w-64 h-96 [perspective:1000px] mt-4'
+          className='group w-64 h-96 perspective-[1000px] mt-4'
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div
-            className={`relative w-full h-full transition-all duration-500 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}
+            className={`relative w-full h-full transition-all duration-500 transform-3d ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
           >
             {/* 卡牌正面 (圖片) */}
-            <div className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 border-yellow-400 flex flex-col items-center justify-center p-4 [backface-visibility:hidden]'>
+            <div className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 border-yellow-400 flex flex-col items-center justify-center p-4 backface-hidden'>
               <div className='bg-gray-100 rounded-full p-4 mb-4'>
                 <Image
                   src={selected.sprites.other['official-artwork'].front_default}
@@ -138,7 +138,7 @@ export default function PokemonSelect() {
             </div>
 
             {/* 卡牌背面 (詳細資訊) */}
-            <div className='absolute inset-0 w-full h-full bg-slate-800 rounded-2xl shadow-xl border-4 border-yellow-500 flex flex-col items-center justify-center p-6 text-white [transform:rotateY(180deg)] [backface-visibility:hidden]'>
+            <div className='absolute inset-0 w-full h-full bg-slate-800 rounded-2xl shadow-xl border-4 border-yellow-500 flex flex-col items-center justify-center p-6 text-white transform-[rotateY(180deg)] backface-hidden'>
               <h3 className='text-xl font-bold mb-6 border-b border-yellow-500 w-full text-center pb-2 capitalize'>
                 {selected.name} Info
               </h3>
