@@ -123,11 +123,14 @@ export default function PokemonSelect() {
             {/* 卡牌正面 (圖片) */}
             <div className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 border-yellow-400 flex flex-col items-center justify-center p-4 backface-hidden'>
               <div className='bg-gray-100 rounded-full p-4 mb-4'>
+                {/* 在 Image 標籤加入淡入效果 */}
                 <Image
                   src={selected.sprites.other['official-artwork'].front_default}
                   alt={selected.name}
                   width={180}
                   height={180}
+                  className='transition-opacity duration-300'
+                  onLoadingComplete={(img) => img.classList.remove('opacity-0')}
                   unoptimized
                 />
               </div>
