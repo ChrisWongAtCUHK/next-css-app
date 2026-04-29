@@ -17,28 +17,6 @@ interface PokemonOption {
   }
 }
 
-// 屬性顏色映射表 (Tailwind Class)
-const TYPE_COLORS: Record<string, string> = {
-  fire: 'bg-orange-500',
-  water: 'bg-blue-500',
-  grass: 'bg-green-500',
-  electric: 'bg-yellow-400',
-  psychic: 'bg-pink-500',
-  ice: 'bg-cyan-300',
-  dragon: 'bg-indigo-600',
-  dark: 'bg-gray-800',
-  fairy: 'bg-rose-300',
-  normal: 'bg-slate-400',
-  fighting: 'bg-red-700',
-  flying: 'bg-sky-400',
-  poison: 'bg-purple-500',
-  ground: 'bg-amber-600',
-  rock: 'bg-stone-500',
-  bug: 'bg-lime-500',
-  ghost: 'bg-violet-700',
-  steel: 'bg-zinc-400',
-}
-
 // 定義顏色碼 (Hex Codes)
 const TYPE_HEX_COLORS: Record<string, string> = {
   normal: '#9ca3af', // gray-400
