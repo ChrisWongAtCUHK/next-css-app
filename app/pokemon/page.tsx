@@ -66,6 +66,14 @@ export default function PokemonSelect() {
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState<PokemonOption | null>(null)
   const [isFlipped, setIsFlipped] = useState(false)
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    setMousePos({ x, y })
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,82 +160,115 @@ export default function PokemonSelect() {
         <div
           className='group w-64 h-96 perspective-[1000px] mt-4 hover:scale-105 transition-transform duration-300'
           onClick={() => setIsFlipped(!isFlipped)}
+          onMouseMove={handleMouseMove}
         >
           <div
-            className={`relative w-full h-full transition-all duration-500 transform-3d ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
+            className='group w-64 h-96 perspective-[1000px] mt-4 hover:scale-105 transition-transform duration-300'
+            onClick={() => setIsFlipped(!isFlipped)}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setMousePos({ x: 50, y: 50 })} // 離開時重置
           >
-            {/* 卡牌正面 (圖片) - 保持白色或加上淡淡的邊框色 */}
             <div
-              className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 flex flex-col items-center justify-center p-4 backface-hidden'
-              style={{
-                borderColor: selected.types[0]
-                  ? TYPE_HEX_COLORS[selected.types[0].type.name]
-                  : '#facc15',
-              }}
+              className={`relative w-full h-full transition-all duration-500 transform-3d ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
             >
-              <div className='bg-gray-100 rounded-full p-4 mb-4'>
-                {/* 在 Image 標籤加入淡入效果 */}
-                <Image
-                  src={selected.sprites.other['official-artwork'].front_default}
-                  alt={selected.name}
-                  width={180}
-                  height={180}
-                  className='transition-opacity duration-300'
-                  onLoadingComplete={(img) => img.classList.remove('opacity-0')}
-                  unoptimized
+              {/* 卡牌正面 (圖片) - 保持白色或加上淡淡的邊框色 */}
+              <div
+                className='absolute inset-0 w-full h-full bg-white rounded-2xl shadow-xl border-4 flex flex-col items-center justify-center p-4 backface-hidden'
+                style={{
+                  borderColor: selected.types[0]
+                    ? TYPE_HEX_COLORS[selected.types[0].type.name]
+                    : '#facc15',
+                }}
+              >
+                <div className='bg-gray-100 rounded-full p-4 mb-4'>
+                  {/* 在 Image 標籤加入淡入效果 */}
+                  <Image
+                    src={
+                      selected.sprites.other['official-artwork'].front_default
+                    }
+                    alt={selected.name}
+                    width={180}
+                    height={180}
+                    className='transition-opacity duration-300'
+                    onLoadingComplete={(img) =>
+                      img.classList.remove('opacity-0')
+                    }
+                    unoptimized
+                  />
+                </div>
+                <h2 className='text-2xl font-black capitalize text-gray-800 tracking-wider'>
+                  {selected.name}
+                </h2>
+                <p className='text-xs text-gray-400 mt-2'>
+                  點擊翻轉查看詳細數值
+                </p>
+                {/* 2. 獨立的雷射層：放在內容上方，使用 mix-blend-mode */}
+                <div
+                  className='absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300'
+                  style={{
+                    background: `linear-gradient(
+                        110deg, 
+                        transparent 25%, 
+                        rgba(255, 219, 112, 0.4) 35%, 
+                        rgba(255, 100, 235, 0.4) 45%, 
+                        rgba(100, 200, 255, 0.4) 55%, 
+                        transparent 65%
+                      )`,
+                    backgroundSize: '250% 250%',
+                    // 根據 mousePos 動態調整漸層位置
+                    backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
+                    mixBlendMode: 'color-dodge',
+                    zIndex: 10,
+                  }}
                 />
               </div>
-              <h2 className='text-2xl font-black capitalize text-gray-800 tracking-wider'>
-                {selected.name}
-              </h2>
-              <p className='text-xs text-gray-400 mt-2'>點擊翻轉查看詳細數值</p>
-            </div>
 
-            {/* 卡牌背面 (詳細資訊) */}
-            <div
-              className='absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-white/50 flex flex-col items-center justify-center p-6 text-white rotate-y-180 backface-hidden'
-              style={{
-                background: selected.types
-                  ? getBackgroundStyle(selected.types)
-                  : '#1e293b',
-              }}
-            >
-              <h3 className='text-xl font-bold mb-2 border-b border-white/30 w-full text-center pb-2 capitalize'>
-                {selected.name} Info
-              </h3>
-              {/* 顯示屬性標籤 */}
-              <div className='flex gap-2 mb-4'>
-                {selected.types.map((t) => (
-                  <span
-                    key={t.type.name}
-                    className='px-3 py-1 bg-black/30 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest'
-                  >
-                    {t.type.name}
-                  </span>
-                ))}
-              </div>
-              <div className='space-y-4 w-full text-sm font-medium'>
-                <div className='flex justify-between border-b border-white/10 pb-1'>
-                  <span className='opacity-70'>HEIGHT</span>
-                  <span className='font-mono text-yellow-300'>
-                    {selected.height / 10} m
-                  </span>
+              {/* 卡牌背面 (詳細資訊) */}
+              <div
+                className='absolute inset-0 w-full h-full rounded-2xl shadow-xl border-4 border-white/50 flex flex-col items-center justify-center p-6 text-white rotate-y-180 backface-hidden'
+                style={{
+                  background: selected.types
+                    ? getBackgroundStyle(selected.types)
+                    : '#1e293b',
+                }}
+              >
+                <h3 className='text-xl font-bold mb-2 border-b border-white/30 w-full text-center pb-2 capitalize'>
+                  {selected.name} Info
+                </h3>
+                {/* 顯示屬性標籤 */}
+                <div className='flex gap-2 mb-4'>
+                  {selected.types.map((t) => (
+                    <span
+                      key={t.type.name}
+                      className='px-3 py-1 bg-black/30 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest'
+                    >
+                      {t.type.name}
+                    </span>
+                  ))}
                 </div>
-                <div className='flex justify-between border-b border-white/10 pb-1'>
-                  <span className='opacity-70'>WEIGHT</span>
-                  <span className='font-mono text-yellow-300'>
-                    {selected.weight / 10} kg
-                  </span>
+                <div className='space-y-4 w-full text-sm font-medium'>
+                  <div className='flex justify-between border-b border-white/10 pb-1'>
+                    <span className='opacity-70'>HEIGHT</span>
+                    <span className='font-mono text-yellow-300'>
+                      {selected.height / 10} m
+                    </span>
+                  </div>
+                  <div className='flex justify-between border-b border-white/10 pb-1'>
+                    <span className='opacity-70'>WEIGHT</span>
+                    <span className='font-mono text-yellow-300'>
+                      {selected.weight / 10} kg
+                    </span>
+                  </div>
+                  <div className='flex justify-between border-b border-white/10 pb-1'>
+                    <span className='opacity-70'>DEX INDEX</span>
+                    <span className='font-mono text-yellow-300'>
+                      #{selected.id.toString().padStart(3, '0')}
+                    </span>
+                  </div>
                 </div>
-                <div className='flex justify-between border-b border-white/10 pb-1'>
-                  <span className='opacity-70'>DEX INDEX</span>
-                  <span className='font-mono text-yellow-300'>
-                    #{selected.id.toString().padStart(3, '0')}
-                  </span>
+                <div className='mt-8 text-[10px] text-gray-400 uppercase tracking-widest text-center'>
+                  PokéAPI Data Card
                 </div>
-              </div>
-              <div className='mt-8 text-[10px] text-gray-400 uppercase tracking-widest text-center'>
-                PokéAPI Data Card
               </div>
             </div>
           </div>
