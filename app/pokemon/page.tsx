@@ -196,18 +196,20 @@ export default function PokemonSelect() {
                 className='absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300'
                 style={{
                   background: `linear-gradient(
-                        110deg, 
-                        transparent 25%, 
-                        rgba(255, 219, 112, 0.4) 35%, 
-                        rgba(255, 100, 235, 0.4) 45%, 
-                        rgba(100, 200, 255, 0.4) 55%, 
-                        transparent 65%
-                      )`,
-                  backgroundSize: '250% 250%',
+                    115deg,
+                    transparent 20%,
+                    rgba(255, 192, 203, 0.26) 30%,   /* 淺粉紅 */
+                    rgba(255, 255, 150, 0.3) 40%,    /* 淺黃 */
+                    rgba(150, 255, 255, 0.26) 50%,   /* 淺藍 */
+                    rgba(200, 150, 255, 0.3) 60%,    /* 淺紫 */
+                    transparent 80%
+                  )`,
+                  backgroundSize: '200% 200%',
                   // 根據 mousePos 動態調整漸層位置
                   backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
                   mixBlendMode: 'color-dodge',
                   zIndex: 10,
+                  filter: 'brightness(1.2) contrast(1.1)', // 增加光亮度
                 }}
               />
             </div>
