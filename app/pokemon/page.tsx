@@ -183,7 +183,7 @@ export default function PokemonSelect() {
                   width={180}
                   height={180}
                   className='transition-opacity duration-300'
-                  onLoadingComplete={(img) => img.classList.remove('opacity-0')}
+                  onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
                   unoptimized
                 />
               </div>
